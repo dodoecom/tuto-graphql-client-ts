@@ -17,7 +17,19 @@ export default function CreateUser() {
   const [name, setName] = useState<string>("");
   const [age, setAge] = useState<number>(0);
 
-  const [addUser, { data, loading, error }] = useMutation(ADD_USER);
+  // const [addUser, { data, loading, error }] = useMutation(ADD_USER);
+
+  const [addUser] = useMutation(ADD_USER, {
+    update(cache, { data: { addUser } }) {
+      cache.modify({
+        fields: {
+          users(existingUsers = []) {
+            return [...existingUsers, addUser];
+          },
+        },
+      });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,15 +57,15 @@ export default function CreateUser() {
           />
           <button 
             type="submit" 
-            disabled={loading}
+            // disabled={loading}
             className="w-full bg-blue-500 text-white font-medium px-2 py-1 rounded-lg hover:bg-blue-600 transition"
-          >
-            {loading ? "Adding..." : "Add User"}
+          >Add User
+            {/* {loading ? "Adding..." : "Add User"} */}
           </button>
         </div>
       </form>
-      {error && <p>Error: {error.message}</p>}
-      {data && <p>User {data.addUser.name} added successfully!</p>}
+      {/* {error && <p>Error: {error.message}</p>}
+      {data && <p>User {data.addUser.name} added successfully!</p>} */}
     </div>
   );
 }
