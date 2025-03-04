@@ -24,42 +24,42 @@ export default function Users() {
   const { loading, error, data, refetch } = useQuery(GET_USERS);
   const [deleteUser] = useMutation(DELETE_USER);
 
-  // const handleDelete = async (id: string) => {
-  //   await deleteUser({
-  //     variables: { id },
-  //     update(cache) {
-  //       cache.modify({
-  //         fields: {
-  //           users(existingUsers = []) {
-  //             return existingUsers.filter((user: { id: string }) => user.id !== id);
-  //           },
-  //         },
-  //       });
-  //     },
-  //   });
-  //   refetch(); // Re-fetch updated user list after deletion
-  // };
-
   const handleDelete = async (id: string) => {
     await deleteUser({
       variables: { id },
-      optimisticResponse: {
-        deleteUser: {
-          id,
-          __typename: "User",
-        },
-      },
       update(cache) {
         cache.modify({
           fields: {
             users(existingUsers = []) {
-              return existingUsers.filter((user: { id: string }) => parseInt(user.id) !== parseInt(id));
+              return existingUsers.filter((user: { id: string }) => user.id !== id);
             },
           },
         });
       },
     });
+    refetch(); // Re-fetch updated user list after deletion
   };
+
+  // const handleDelete = async (id: string) => {
+  //   await deleteUser({
+  //     variables: { id },
+  //     optimisticResponse: {
+  //       deleteUser: {
+  //         id,
+  //         __typename: "User",
+  //       },
+  //     },
+  //     update(cache) {
+  //       cache.modify({
+  //         fields: {
+  //           users(existingUsers = []) {
+  //             return existingUsers.filter((user: { id: string }) => parseInt(user.id) !== parseInt(id));
+  //           },
+  //         },
+  //       });
+  //     },
+  //   });
+  // };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
